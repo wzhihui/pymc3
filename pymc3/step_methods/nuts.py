@@ -68,8 +68,9 @@ class NUTS(ArrayStepShared):
             scaling = model.test_point
 
         if isinstance(scaling, dict):
-            scaling = guess_scaling(
-                Point(scaling, model=model), model=model, vars=vars)
+            scaling = guess_scaling(Point(scaling, model=model), model=model, vars = vars)
+
+        scaling = scaling.astype(theano.config.floatX)
 
         n = scaling.shape[0]
 
@@ -99,11 +100,12 @@ class NUTS(ArrayStepShared):
 
     def astep(self, q0):
         # Hamiltonian(self.logp, self.dlogp, self.potential)
+        q0 = q0.astype(theano.config.floatX)
         H = self.leapfrog1_dE
         Emax = self.Emax
-        e = self.step_size
+        e = np.array(self.step_size, dtype=theano.config.floatX)
 
-        p0 = self.potential.random()
+        p0 = self.potential.random().astype(theano.config.floatX)
         u = uniform()
         q = qn = qp = q0
         p = pn = pp = p0
@@ -111,7 +113,7 @@ class NUTS(ArrayStepShared):
         n, s, j = 1, 1, 0
 
         while s == 1:
-            v = bern(.5) * 2 - 1
+            v = np.array(bern(.5) * 2 - 1, dtype=theano.config.floatX)
 
             if v == -1:
                 qn, pn, _, _, q1, n1, s1, a, na = buildtree(
@@ -201,16 +203,16 @@ def leapfrog1_dE(logp, vars, shared, pot, profile):
 
     H = Hamiltonian(logp, dlogp, pot)
 
-    p = tt.dvector('p')
+    p = tt.vector('p')
     p.tag.test_value = q.tag.test_value
 
-    q0 = tt.dvector('q0')
+    q0 = tt.vector('q0')
     q0.tag.test_value = q.tag.test_value
-    p0 = tt.dvector('p0')
+    p0 = tt.vector('p0')
     p0.tag.test_value = p.tag.test_value
 
-    e = tt.dscalar('e')
-    e.tag.test_value = 1
+    e = tt.scalar('e')
+    e.tag.test_value = 1.
 
     q1, p1 = leapfrog(H, q, p, 1, e)
     E = energy(H, q1, p1)

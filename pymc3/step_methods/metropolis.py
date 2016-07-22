@@ -130,9 +130,10 @@ class Metropolis(ArrayStepShared):
             else:
                 delta[self.discrete] = round(
                     delta[self.discrete], 0).astype(int)
-                q = q0 + delta
+                q = (q0 + delta)
         else:
-            q = q0 + delta
+            q0 = q0.astype(theano.config.floatX)
+            q = (q0 + delta).astype(theano.config.floatX)
 
         q_new = metrop_select(self.delta_logp(q, q0), q, q0)
 
