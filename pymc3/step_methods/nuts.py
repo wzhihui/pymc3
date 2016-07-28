@@ -103,7 +103,7 @@ class NUTS(ArrayStepShared):
         q0 = q0.astype(theano.config.floatX)
         H = self.leapfrog1_dE
         Emax = self.Emax
-        e = np.array(self.step_size, dtype=theano.config.floatX)
+        e = array(self.step_size, dtype=theano.config.floatX)
 
         p0 = self.potential.random().astype(theano.config.floatX)
         u = uniform()
@@ -113,7 +113,7 @@ class NUTS(ArrayStepShared):
         n, s, j = 1, 1, 0
 
         while s == 1:
-            v = np.array(bern(.5) * 2 - 1, dtype=theano.config.floatX)
+            v = array(bern(.5) * 2 - 1, dtype=theano.config.floatX)
 
             if v == -1:
                 qn, pn, _, _, q1, n1, s1, a, na = buildtree(
