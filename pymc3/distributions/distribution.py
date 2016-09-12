@@ -1,6 +1,7 @@
 import numpy as np
 import theano.tensor as tt
 from theano import function
+import theano
 
 from ..memoize import memoize
 from ..model import Model, get_named_nodes
